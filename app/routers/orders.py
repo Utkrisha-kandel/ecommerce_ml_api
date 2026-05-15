@@ -1,4 +1,4 @@
-from fastapi import APIRouter,status,HTTPException,Depends
+from fastapi import APIRouter,status,HTTPException,Depends,BackgroundTasks
 from app.models.schemas import OrderCreate, OrderResponse
 from app.database import get_db
 from typing import List
@@ -7,13 +7,14 @@ from sqlalchemy.orm import Session
 from app.models.models import Order,Product
 from app.utils.oauth2 import get_current_user
 from app.models.models import User
+from app.utils.email import send_order_confirmation
 router = APIRouter(
     prefix="/orders",
     tags=["Orders"]
 )
 #create order
 @router.post("/",status_code=status.HTTP_201_CREATED,response_model=OrderResponse)
-def create_order(order:OrderCreate,db:Session=Depends(get_db),current_user:User=Depends(get_current_user)):
+def create_order(order:OrderCreate,background_tasks:BackgroundTasks,db:Session=Depends(get_db),current_user:User=Depends(get_current_user)):
     product = db.query(Product).filter(Product.product_id == order.product_id).first()
     user_id = current_user.user_id
     if not product:
@@ -37,6 +38,12 @@ def create_order(order:OrderCreate,db:Session=Depends(get_db),current_user:User=
     db.add(new_order)
     db.commit()
     db.refresh(new_order)
+    background_tasks.add_task(
+        send_order_confirmation,
+        email=current_user.email,
+        order_id = new_order.order_id,
+        total_price=total_price
+    )
     return new_order
     
     #get all orders
