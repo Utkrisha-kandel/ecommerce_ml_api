@@ -32,6 +32,7 @@ class Product(Base):
     price = Column(Float, nullable=False)
     quantity = Column(Integer, nullable=False)
     description = Column(String, nullable=True)
+    image = Column(String, nullable=True)
 
     orders = relationship("Order", back_populates="product")
     cart = relationship("Cart", back_populates="product")

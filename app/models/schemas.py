@@ -26,6 +26,7 @@ class ProductResponse(BaseModel):
     price:float 
     quantity:int
     description:Optional[str]=None
+    image:Optional[str]=None
 
 class CartCreate(BaseModel):
     product_id: str

@@ -48,3 +48,11 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     user_id = verify_access_token(token, credentials_exception)
     user = db.query(User).filter(User.user_id == user_id).first()
     return user
+
+def get_current_admin(current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only admins can perform this action"
+        )
+    return current_user
