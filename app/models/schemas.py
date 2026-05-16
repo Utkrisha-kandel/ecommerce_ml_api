@@ -51,6 +51,16 @@ class OrderResponse(BaseModel):
     status: str
 
 
+class SentimentRequest(BaseModel):
+    text: str = Field(..., min_length=1)
+
+
+class SentimentResponse(BaseModel):
+    text: str
+    sentiment: str
+    confidence: float = Field(..., ge=0, le=1)
+
+
 
 
 
