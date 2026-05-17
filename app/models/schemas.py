@@ -63,5 +63,18 @@ class SentimentResponse(BaseModel):
 
 
 
+class ReviewCreate(BaseModel):
+    text: str = Field(..., min_length=1)
+    rating: int = Field(..., ge=1, le=5)
+
+class ReviewResponse(BaseModel):
+    review_id: str
+    user_id: str
+    product_id: str
+    text: str
+    sentiment: str
+    confidence: float
+    rating: int
+    created_at: str
 
 

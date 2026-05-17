@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Float, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
 import uuid
+from datetime import datetime
 
 
 def generate_uuid():
@@ -20,6 +21,7 @@ class User(Base):
 
     orders = relationship("Order", back_populates="user")
     cart = relationship("Cart", back_populates="user")
+    reviews = relationship("Review", back_populates="user")
 
 
 
@@ -36,6 +38,7 @@ class Product(Base):
 
     orders = relationship("Order", back_populates="product")
     cart = relationship("Cart", back_populates="product")
+    reviews = relationship("Review", back_populates="product")
 
 
 
@@ -63,3 +66,18 @@ class Cart(Base):
 
     user = relationship("User", back_populates="cart")
     product = relationship("Product", back_populates="cart")
+
+class Review(Base):
+    __tablename__ = "reviews"
+
+    review_id = Column(String, primary_key=True, default=generate_uuid)
+    user_id = Column(String, ForeignKey("users.user_id"), nullable=False)
+    product_id = Column(String, ForeignKey("products.product_id"), nullable=False)
+    text = Column(String, nullable=False)
+    sentiment = Column(String, nullable=False)
+    confidence = Column(Float, nullable=False)
+    rating = Column(Integer, nullable=False)
+    created_at = Column(String, default=lambda: datetime.now().isoformat())
+
+    user = relationship("User", back_populates="reviews")
+    product = relationship("Product", back_populates="reviews")
